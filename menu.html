@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ชุดฝึกสมการเชิงอนุพันธ์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mitr:wght@500;600&display=swap">
+<style>:root {
+  /* Layout idea: a graph-paper notebook page; one centred column, the equation is the hero, four coloured answer tiles below. */
+  --bg: #e9eef4;
+  --grid: rgba(47, 91, 211, 0.07);
+  --surface: #ffffff;
+  --ink: #15203a;
+  --muted: #56627a;
+  --line: #d3dbe7;
+  --accent: #2f5bd3;
+  --good: #137a4c;
+  --good-bg: #e3f4ea;
+  --bad: #b3261e;
+  --bad-bg: #fbe7e5;
+  --a: #c23b30; --a-ink: #ffffff;
+  --b: #f0b429; --b-ink: #1e1a0e;
+  --c: #137a63; --c-ink: #ffffff;
+  --d: #3a49b8; --d-ink: #ffffff;
+  --font-display: "Mitr", "IBM Plex Sans Thai", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Thai", "Sarabun", system-ui, sans-serif;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(21, 32, 58, 0.06), 0 6px 18px rgba(21, 32, 58, 0.07);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1320; --grid: rgba(125, 155, 255, 0.06); --surface: #172034; --ink: #e8edf7; --muted: #9ba7c0;
+    --line: #2a3651; --accent: #86a2ff; --good: #5fd39a; --good-bg: #123426; --bad: #ff8f86; --bad-bg: #3a1a1a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1320; --grid: rgba(125, 155, 255, 0.06); --surface: #172034; --ink: #e8edf7; --muted: #9ba7c0;
+  --line: #2a3651; --accent: #86a2ff; --good: #5fd39a; --good-bg: #123426; --bad: #ff8f86; --bad-bg: #3a1a1a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 20px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.25; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(26px, 4.4vw, 38px); }
+h2 { font-size: 22px; }
+h3 { font-size: 17px; }
+.muted { color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+
+/* ---------- start ---------- */
+.hero { display: grid; gap: 6px; }
+.hero .kicker { font-family: var(--font-display); color: var(--accent); font-size: 15px; letter-spacing: 0.02em; }
+.setup { display: grid; gap: 18px; }
+.field { display: grid; gap: 8px; }
+.field > label, .field > .label { font-weight: 600; font-size: 15px; }
+.text-input { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; width: 100%; max-width: 360px; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button, .chip-toggle {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.seg button[aria-pressed="true"], .chip-toggle[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.row { display: flex; flex-wrap: wrap; gap: 18px 32px; }
+.btn {
+  border: 0; border-radius: 12px; padding: 12px 22px; cursor: pointer; font-family: var(--font-display); font-weight: 500; font-size: 18px;
+  background: var(--accent); color: var(--surface);
+}
+.btn.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.hint { font-size: 14px; color: var(--muted); }
+
+.defs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.def { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--surface); display: grid; gap: 6px; align-content: start; }
+.def h3 { color: var(--accent); }
+.def p { margin: 0; font-size: 15px; }
+.def .ex { overflow-x: auto; font-size: 15px; }
+
+/* ---------- play ---------- */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.qcount { font-family: var(--font-display); font-size: 18px; font-variant-numeric: tabular-nums; }
+.qtype { font-size: 14px; color: var(--muted); }
+.stats { display: flex; gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px 12px; font-variant-numeric: tabular-nums; font-size: 15px; }
+.stat b { font-family: var(--font-display); font-weight: 600; }
+.timer { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+.bar { height: 10px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: left center; }
+.bar.low > i { background: var(--a); }
+.secs { font-family: var(--font-display); font-size: 22px; min-width: 2.5ch; text-align: right; font-variant-numeric: tabular-nums; }
+
+.question { display: grid; gap: 14px; text-align: center; }
+.prompt { font-family: var(--font-display); font-size: clamp(19px, 3vw, 24px); font-weight: 500; }
+.eqbox { overflow-x: auto; overflow-y: hidden; padding: 6px 4px; font-size: clamp(17px, 3.2vw, 24px); }
+.eqbox .katex-display { margin: 0.3em 0; }
+.eqname { font-size: 14px; color: var(--muted); }
+
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .answers { grid-template-columns: 1fr; } }
+.ans {
+  position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px;
+  border: 0; border-radius: var(--radius); padding: 14px 16px; min-height: 76px; text-align: left; cursor: pointer;
+  font-size: 18px; font-weight: 500; box-shadow: var(--shadow); transition: transform 0.08s ease, opacity 0.2s ease;
+}
+.ans:hover:not(:disabled) { transform: translateY(-2px); }
+.ans:disabled { cursor: default; }
+.ans .mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9px; background: rgba(255, 255, 255, 0.18); font-family: var(--font-display); font-size: 15px; }
+.ans .mark svg { width: 18px; height: 18px; }
+.ans .body { overflow-x: auto; overflow-y: hidden; min-width: 0; }
+.ans.math .body { font-size: 17px; }
+.ans.a { background: var(--a); color: var(--a-ink); }
+.ans.b { background: var(--b); color: var(--b-ink); }
+.ans.b .mark { background: rgba(0, 0, 0, 0.1); }
+.ans.c { background: var(--c); color: var(--c-ink); }
+.ans.d { background: var(--d); color: var(--d-ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { background: rgba(255, 255, 255, 0.2); border-radius: 999px; padding: 1px 10px; font-size: 15px; }
+.ans.b .chips span { background: rgba(0, 0, 0, 0.1); }
+.answered .ans.dim { opacity: 0.35; }
+.ans .verdict { position: absolute; top: -9px; right: -6px; border-radius: 999px; padding: 0 10px; font-size: 13px; font-weight: 600; background: var(--surface); color: var(--ink); border: 2px solid currentColor; }
+.ans .verdict.ok { color: var(--good); }
+.ans .verdict.no { color: var(--bad); }
+.ans .cls { grid-column: 1 / -1; font-size: 13px; opacity: 0.95; }
+
+.feedback { display: grid; gap: 10px; border-left: 0; }
+.feedback.good { background: var(--good-bg); border-color: transparent; }
+.feedback.bad { background: var(--bad-bg); border-color: transparent; }
+.fb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.fb-head h2 { font-size: 20px; }
+.fb-head .pts { font-family: var(--font-display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.feedback.good h2, .feedback.good .pts { color: var(--good); }
+.feedback.bad h2 { color: var(--bad); }
+.explain { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.explain li { padding: 6px 10px; border-radius: 8px; background: var(--surface); font-size: 15px; overflow-x: auto; }
+.explain li.focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+.next-row { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+
+/* ---------- results ---------- */
+.result-head { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 2px; }
+.tile .v { font-family: var(--font-display); font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tile .k { font-size: 14px; color: var(--muted); }
+.tile.main .v { color: var(--accent); font-size: 38px; }
+.catline { display: flex; flex-wrap: wrap; gap: 8px; }
+.catchip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.catchip b { font-weight: 600; margin-right: 4px; }
+.answers.two .ans { min-height: 96px; font-size: 19px; }
+.review { display: grid; gap: 10px; }
+.rv { display: grid; gap: 6px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); border-left: 6px solid var(--good); }
+.rv.wrong { border-left-color: var(--bad); }
+.rv .top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.rv .eq { overflow-x: auto; }
+.rv .ansline { font-size: 15px; }
+.rv .ansline b { font-weight: 600; }
+.rv details summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.stamp { font-size: 14px; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ans { transition: none; }
+  .ans:hover:not(:disabled) { transform: none; }
+}
+
+/* ---------- practice quiz additions ---------- */
+.prompt-text { font-family: var(--font-body); font-size: clamp(17px, 2.4vw, 20px); line-height: 1.75; text-align: left; max-width: 68ch; margin: 0 auto; }
+.feedback h3 { font-size: 17px; }
+.steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
+.steps li { background: var(--surface); border-radius: 8px; padding: 6px 10px; overflow-x: auto; font-size: 15px; }
+.steps li::marker { color: var(--muted); font-family: var(--font-display); }
+.feedback details summary, .rv details summary { cursor: pointer; color: var(--accent); font-size: 15px; }
+.feedback details[open] summary { margin-bottom: 8px; }
+.ans.math .body { font-size: 18px; }
+
+/* ---------- level map ---------- */
+.progress-card { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; }
+.prog-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.prog-stats .tile { min-width: 130px; }
+.prog-bar { flex: 1 1 100%; height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.prog-bar i { display: block; height: 100%; background: var(--good); border-radius: 999px; }
+.star-v { display: inline-flex; align-items: center; gap: 6px; }
+.star-v svg { width: 26px; height: 26px; color: var(--b); }
+.star-v small { font-size: 16px; color: var(--muted); font-weight: 500; }
+.done-all { font-family: var(--font-display); color: var(--good); font-size: 18px; align-self: center; }
+.group { display: grid; gap: 10px; }
+.group-head { display: flex; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
+.group-head .muted { font-size: 14px; }
+.levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+.lvl {
+  display: grid; justify-items: center; gap: 4px; padding: 12px 6px 10px; border-radius: 14px; cursor: pointer;
+  border: 2px solid var(--line); background: var(--surface); box-shadow: var(--shadow); transition: transform 0.08s ease;
+}
+.lvl:hover { transform: translateY(-2px); }
+.lvl-no { font-family: var(--font-display); font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.lvl-tag { font-size: 12px; color: var(--muted); }
+.lvl.done { border-color: var(--good); background: var(--good-bg); }
+.lvl.done .lvl-no { color: var(--good); }
+.lvl.tried { border-color: var(--bad); border-style: dashed; }
+.lvl.tried .lvl-tag { color: var(--bad); }
+.stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+.stars i { display: inline-block; width: 16px; height: 16px; color: var(--line); }
+.stars i.on { color: var(--b); }
+.stars.lg i { width: 30px; height: 30px; }
+.stars svg { width: 100%; height: 100%; display: block; }
+.btn.small { font-size: 15px; padding: 7px 14px; border-radius: 10px; }
+.btn.danger { background: var(--bad); color: var(--surface); }
+.linkish { background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 14px; padding: 0; }
+.reset-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; font-size: 14px; }
+.topbar .lvl-title { flex: 1; min-width: 140px; }
+.ans.struck .body { text-decoration: line-through; }
+.sum-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.sum-cell { display: grid; gap: 2px; justify-items: start; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; }
+.sum-cell.done { background: var(--good-bg); border-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .lvl { transition: none; } .lvl:hover { transform: none; } }
+.ans.struck { opacity: 0.4; }
+
+/* ---------- tabs and step-by-step mode ---------- */
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tab { border: 2px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 18px; cursor: pointer; font-family: var(--font-display); font-size: 17px; }
+.tab small { font-family: var(--font-body); font-size: 13px; color: var(--muted); margin-left: 4px; }
+.tab[aria-selected="true"] { border-color: var(--accent); background: var(--accent); color: var(--surface); }
+.tab[aria-selected="true"] small { color: var(--surface); opacity: 0.85; }
+.dots { list-style: none; display: flex; gap: 8px; justify-content: center; margin: 0; padding: 0; }
+.dots li { width: 28px; height: 8px; border-radius: 999px; background: var(--line); }
+.dots li.ok { background: var(--good); }
+.dots li.now { background: var(--accent); }
+.work h3, .step-ask .step-head { font-size: 16px; }
+.worklist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.worklist li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: baseline; background: var(--bg); border-radius: 10px; padding: 8px 12px; }
+.worklist .step-m { grid-column: 1 / -1; overflow-x: auto; font-size: 17px; }
+.step-n { font-family: var(--font-display); font-size: 13px; color: var(--surface); background: var(--accent); border-radius: 999px; padding: 1px 10px; white-space: nowrap; }
+.step-t { font-weight: 600; }
+.step-ask { display: grid; gap: 8px; border: 2px solid var(--accent); }
+.step-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: 17px; }
+.step-q { font-size: 18px; overflow-x: auto; }
+.feedback .worklist li { background: var(--surface); }
+
+.menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.mcard { display: grid; gap: 6px; align-content: start; text-decoration: none; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); transition: transform 0.08s ease, border-color 0.15s ease; }
+.mcard:hover { transform: translateY(-2px); border-color: var(--accent); }
+.mcard .ch { font-family: var(--font-display); font-size: 14px; color: var(--surface); background: var(--accent); border-radius: 999px; padding: 1px 12px; justify-self: start; }
+.mcard h2 { font-size: 19px; }
+.mcard p { margin: 0; font-size: 15px; color: var(--muted); }
+.mcard .meta { font-size: 14px; color: var(--good); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .mcard { transition: none; } .mcard:hover { transform: none; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="kicker">แคลคูลัสสำหรับวิศวกร · สมการเชิงอนุพันธ์</div>
+    <h1>ชุดฝึกสมการเชิงอนุพันธ์</h1>
+    <p class="muted" style="margin:0">เลือกหัวข้อที่ต้องการฝึก แต่ละหัวข้อเก็บดาวและความคืบหน้าไว้ในเครื่องนี้ และมีหน้าสรุปผลสำหรับแคปส่งอาจารย์</p>
+  </header>
+  <nav class="menu" aria-label="หัวข้อ">
+    <a class="mcard" href="index.html"><span class="ch">บทที่ 1</span><h2>จำแนกสมการเชิงอนุพันธ์</h2><p>ODE หรือ PDE · อันดับและระดับขั้น · เชิงเส้นหรือไม่เชิงเส้น · แบบจับเวลา</p><span class="meta">สุ่มโจทย์ใหม่ทุกรอบ</span></a>
+    <a class="mcard" href="separable.html"><span class="ch">2.1</span><h2>สมการแยกตัวแปรได้ และกฎการเย็นตัวของนิวตัน</h2><p>ผลเฉลยทั่วไป · ผลเฉลยเฉพาะ · การประยุกต์</p><span class="meta">30 ด่าน · ทีละขั้น 10 ข้อ</span></a>
+    <a class="mcard" href="homogeneous.html"><span class="ch">2.2</span><h2>สมการเชิงอนุพันธ์เอกพันธ์</h2><p>ให้ v = y/x แยกตัวแปร แล้วแทนกลับ</p><span class="meta">10 ด่าน · ทีละขั้น 5 ข้อ</span></a>
+    <a class="mcard" href="linear.html"><span class="ch">2.3</span><h2>สมการเชิงเส้นอันดับหนึ่ง</h2><p>หาตัวประกอบอินทิเกรต μ(x)</p><span class="meta">7 ด่าน · ทีละขั้น 3 ข้อ</span></a>
+    <a class="mcard" href="reduction.html"><span class="ch">3.1</span><h2>Reduction of Order</h2><p>รู้ y₁ แล้วหา y₂ และผลเฉลยทั่วไป</p><span class="meta">6 ด่าน · ทีละขั้น 3 ข้อ</span></a>
+    <a class="mcard" href="homo-const.html"><span class="ch">3.2</span><h2>สมการเอกพันธ์สัมประสิทธิ์คงตัว</h2><p>สมการช่วย · ราก 3 กรณี · ผลเฉลยทั่วไปและเฉพาะ</p><span class="meta">21 ด่าน · ทีละขั้น 8 ข้อ</span></a>
+    <a class="mcard" href="nonhomo.html"><span class="ch">3.3</span><h2>สมการไม่เอกพันธ์ (undetermined coefficient)</h2><p>รูปของ yₚ · การคูณ xˢ · ผลเฉลยทั่วไปและเฉพาะ</p><span class="meta">21 ด่าน · ทีละขั้น 8 ข้อ</span></a>
+  </nav>
+</main>
+</body>
+</html>
